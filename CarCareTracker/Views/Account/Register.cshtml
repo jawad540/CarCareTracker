@@ -1,0 +1,68 @@
+@model CarCareTracker.Models.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+}
+
+<div class="auth-card">
+    <div class="logo-circle">🚗</div>
+    <h2>Create Account</h2>
+    <p class="subtitle">Join Car Care Tracker today</p>
+
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+    {
+        @*  AntiForgeryToken removed  *@
+        @Html.ValidationSummary(true)
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-icon">
+                <span class="ic">👤</span>
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Enter your full name" })
+            </div>
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "field-error" })
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <div class="input-icon">
+                <span class="ic">✉️</span>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "Enter your email address", type = "email" })
+            </div>
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "field-error" })
+        </div>
+
+        <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-icon">
+                <span class="ic">📱</span>
+                @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "Enter your phone number" })
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Password</label>
+                <div class="input-icon">
+                    <span class="ic">🔒</span>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Create a password" })
+                </div>
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "field-error" })
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <div class="input-icon">
+                    <span class="ic">🔒</span>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", placeholder = "Confirm your password" })
+                </div>
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "field-error" })
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+
+        <div class="auth-footer">
+            Already have an account? @Html.ActionLink("Login", "Login", "Account")
+        </div>
+    }
+</div>

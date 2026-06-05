@@ -1,0 +1,83 @@
+@model CarCareTracker.Models.FuelRecord
+@{
+    ViewBag.Title = "Add Fuel Record";
+    ViewBag.ActiveNav = "fuel";
+    var vehicles = ViewBag.Vehicles as System.Collections.Generic.List<CarCareTracker.Models.Vehicle>;
+}
+<div class="page-head"><h1>Add Fuel Record</h1><p>Record a fuel fill-up for your vehicle.</p></div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-head"><h3>Fuel Details</h3></div>
+        <div class="card-body">
+            @using (Html.BeginForm("Create", "Fuel", FormMethod.Post))
+            {
+                @*  AntiForgeryToken removed  *@
+                @Html.ValidationSummary(true)
+                <div class="form-group">
+                    <label>Select Vehicle *</label>
+                    <select name="VehicleId" class="form-control" required>
+                        <option value="">Choose a vehicle</option>
+                        @if (vehicles != null) { foreach (var v in vehicles) { <option value="@v.VehicleId">@v.Brand @v.Model (@v.PlateNumber)</option> } }
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Fuel Date *</label>
+                        @Html.TextBoxFor(m => m.FuelDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                    </div>
+                    <div class="form-group">
+                        <label>Odometer Reading (KM) *</label>
+                        @Html.TextBoxFor(m => m.OdometerReading, new { @class = "form-control", type = "number", placeholder = "Enter odometer reading" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Liters *</label>
+                        @Html.TextBoxFor(m => m.Liters, new { @class = "form-control", type = "number", step = "0.01", id = "liters", placeholder = "Enter liters", onchange = "calcTotal()", onkeyup = "calcTotal()" })
+                    </div>
+                    <div class="form-group">
+                        <label>Cost per Liter ($) *</label>
+                        <input type="number" step="0.01" id="cpl" class="form-control" placeholder="Enter cost per liter" onchange="calcTotal()" onkeyup="calcTotal()" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Total Cost ($) *</label>
+                    @Html.TextBoxFor(m => m.Cost, new { @class = "form-control", type = "number", step = "0.01", id = "total", placeholder = "Total cost will be calculated" })
+                </div>
+                <div class="form-group">
+                    <label>Station Name</label>
+                    @Html.TextBoxFor(m => m.StationName, new { @class = "form-control", placeholder = "Enter station name" })
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", placeholder = "Add any notes (optional)" })
+                </div>
+                <div style="display:flex;gap:12px;">
+                    <button type="submit" class="btn btn-primary">Save Record</button>
+                    <a href="@Url.Action("Index")" class="btn btn-light">Cancel</a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div>
+        <div class="card">
+            <div class="card-head"><h3>⛽ Fueling Tips</h3></div>
+            <div class="card-body" style="font-size:13px;color:var(--slate-600);">
+                <p style="margin-bottom:10px;">• Keep your odometer updated to monitor fuel efficiency.</p>
+                <p>• Compare cost per liter over time to find best prices.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script>
+function calcTotal(){
+    var l=parseFloat(document.getElementById('liters').value)||0;
+    var c=parseFloat(document.getElementById('cpl').value)||0;
+    if(l>0 && c>0){ document.getElementById('total').value=(l*c).toFixed(2); }
+}
+</script>
+}

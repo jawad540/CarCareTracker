@@ -1,0 +1,42 @@
+name: CarCareTracker CI
+
+# ============================================================
+#  DevOps - Continuous Integration pipeline (GitHub Actions)
+#  Runs automatically on every push / pull request:
+#    1. Restores NuGet packages
+#    2. Builds the solution (MSBuild)
+#    3. Runs the unit tests (MSTest / VSTest)
+# ============================================================
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Setup VSTest
+        uses: darenm/setup-vstest@v1
+
+      - name: Restore NuGet packages
+        run: nuget restore CarCareTracker.sln
+
+      - name: Build solution
+        run: msbuild CarCareTracker.sln /p:Configuration=Debug /p:Platform="Any CPU"
+
+      - name: Run unit tests
+        run: vstest.console.exe CarCareTracker.Tests\bin\Debug\CarCareTracker.Tests.dll

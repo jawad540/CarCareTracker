@@ -1,0 +1,70 @@
+@model System.Collections.Generic.List<CarCareTracker.Models.User>
+@{
+    ViewBag.Title = "Manage Users";
+    ViewBag.ActiveNav = "admin";
+}
+<div class="page-head"><h1>Manage Users</h1><p>View and manage all user accounts in the system.</p></div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon blue">👥</div></div>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value">@ViewBag.TotalUsers</div>
+        <div class="stat-sub">All registered users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon green">✓</div></div>
+        <div class="stat-label">Active Users</div>
+        <div class="stat-value">@ViewBag.ActiveUsers</div>
+        <div class="stat-sub">Currently active users</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon purple">🛡️</div></div>
+        <div class="stat-label">Admin Accounts</div>
+        <div class="stat-value">@ViewBag.AdminAccounts</div>
+        <div class="stat-sub">Users with admin role</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon orange">➕</div></div>
+        <div class="stat-label">New Registrations</div>
+        <div class="stat-value">@ViewBag.NewThisMonth</div>
+        <div class="stat-sub">This month</div>
+    </div>
+</div>
+
+<div class="card"><div class="card-body" style="padding:0;">
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Full Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created Date</th><th>Actions</th></tr></thead>
+            <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td><strong>@u.FullName</strong></td>
+                    <td>@u.Email</td>
+                    <td><span class="badge @(u.RoleName == "Admin" ? "badge-purple badge-blue" : "badge-gray")">@u.RoleName</span></td>
+                    <td><span class="badge @(u.IsActive ? "badge-green" : "badge-red")">@(u.IsActive ? "Active" : "Inactive")</span></td>
+                    <td>@u.CreatedAt.ToString("MMM dd, yyyy")</td>
+                    <td>
+                        <div class="row-actions">
+                            @using (Html.BeginForm("ToggleActive", "Admin", FormMethod.Post, new { style = "display:inline" }))
+                            {
+                                @*  AntiForgeryToken removed  *@
+                                <input type="hidden" name="id" value="@u.UserId" />
+                                <input type="hidden" name="active" value="@((!u.IsActive).ToString().ToLower())" />
+                                <button type="submit" class="act-edit">@(u.IsActive ? "Deactivate" : "Activate")</button>
+                            }
+                            @using (Html.BeginForm("Delete", "Admin", new { id = u.UserId }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this user?');" }))
+                            {
+                                @*  AntiForgeryToken removed  *@
+                                <button type="submit" class="act-del">Delete</button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <p style="padding:14px 22px;color:var(--slate-500);font-size:12px;">Showing @Model.Count user(s)</p>
+</div></div>

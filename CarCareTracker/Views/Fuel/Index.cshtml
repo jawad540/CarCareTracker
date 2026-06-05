@@ -1,0 +1,33 @@
+@model System.Collections.Generic.List<CarCareTracker.Models.FuelRecord>
+@{
+    ViewBag.Title = "Fuel Records";
+    ViewBag.ActiveNav = "fuel";
+}
+<div class="page-head page-head-row">
+    <div><h1>Fuel Records</h1><p>All fuel fill-ups across your vehicles.</p></div>
+    <a href="@Url.Action("Create")" class="btn btn-primary">+ Add Fuel</a>
+</div>
+<div class="card"><div class="card-body" style="padding:0;">
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Vehicle</th><th>Date</th><th>Liters</th><th>Cost</th><th>Odometer</th><th>Station</th><th></th></tr></thead>
+            <tbody>
+            @if (Model.Count == 0) { <tr><td colspan="7" class="empty"><div class="ei">⛽</div>No fuel records yet.</td></tr> }
+            else { foreach (var f in Model) {
+                <tr>
+                    <td>@f.VehicleLabel</td>
+                    <td>@f.FuelDate.ToString("MMM dd, yyyy")</td>
+                    <td>@f.Liters.ToString("N2") L</td>
+                    <td><strong>$@f.Cost.ToString("N2")</strong></td>
+                    <td>@f.OdometerReading.ToString("N0") KM</td>
+                    <td>@(f.StationName ?? "-")</td>
+                    <td>
+                        @using (Html.BeginForm("Delete", "Fuel", new { id = f.FuelId }, FormMethod.Post, new { onsubmit = "return confirm('Delete?');" }))
+                        { @*  AntiForgeryToken removed  *@ <button type="submit" class="act-del">Delete</button> }
+                    </td>
+                </tr>
+            } }
+            </tbody>
+        </table>
+    </div>
+</div></div>

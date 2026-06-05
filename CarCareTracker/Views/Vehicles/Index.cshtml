@@ -1,0 +1,83 @@
+@model System.Collections.Generic.List<CarCareTracker.Models.Vehicle>
+@{
+    ViewBag.Title = "Vehicles";
+    ViewBag.ActiveNav = "vehicles";
+}
+
+<div class="page-head page-head-row">
+    <div>
+        <h1>Show All Vehicles</h1>
+        <p>View and manage all vehicles in the system.</p>
+    </div>
+    <a href="@Url.Action("Create")" class="btn btn-primary">+ Add Vehicle</a>
+</div>
+
+<div class="stats-grid" style="grid-template-columns:repeat(2,1fr);">
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon blue">🚙</div></div>
+        <div class="stat-label">Total Vehicles</div>
+        <div class="stat-value">@Model.Count</div>
+        <div class="stat-sub">All vehicles in system</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon green">✓</div></div>
+        <div class="stat-label">Active Vehicles</div>
+        <div class="stat-value">@Model.Count(v => v.IsActive)</div>
+        <div class="stat-sub">Currently active vehicles</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <input type="text" id="searchBox" class="form-control search" placeholder="Search by plate number, brand, or model..." onkeyup="filterTable()" />
+        </div>
+        <div class="table-wrap">
+            <table class="data" id="vehTable">
+                <thead><tr><th>Plate Number</th><th>Brand</th><th>Model</th><th>Year</th><th>Type</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr><td colspan="7" class="empty"><div class="ei">🚙</div>No vehicles yet. Add your first vehicle!</td></tr>
+                }
+                else
+                {
+                    foreach (var v in Model)
+                    {
+                        <tr>
+                            <td><strong>@v.PlateNumber</strong></td>
+                            <td>@v.Brand</td>
+                            <td>@v.Model</td>
+                            <td>@v.YearMade</td>
+                            <td>@v.TypeName</td>
+                            <td><span class="badge @(v.IsActive ? "badge-green" : "badge-gray")">@(v.IsActive ? "Active" : "Inactive")</span></td>
+                            <td>
+                                <div class="row-actions">
+                                    <a href="@Url.Action("Details", new { id = v.VehicleId })" class="act-view">View</a>
+                                    <a href="@Url.Action("Edit", new { id = v.VehicleId })" class="act-edit">Edit</a>
+                                    @using (Html.BeginForm("Delete", "Vehicles", new { id = v.VehicleId }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete this vehicle?');" }))
+                                    {
+                                        @*  AntiForgeryToken removed  *@
+                                        <button type="submit" class="act-del">Delete</button>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-top:14px;color:var(--slate-500);font-size:12px;">Showing @Model.Count vehicle(s)</p>
+    </div>
+</div>
+
+@section scripts {
+<script>
+function filterTable(){
+    var q=document.getElementById('searchBox').value.toLowerCase();
+    var rows=document.querySelectorAll('#vehTable tbody tr');
+    rows.forEach(function(r){ r.style.display = r.innerText.toLowerCase().indexOf(q)>-1 ? '' : 'none'; });
+}
+</script>
+}

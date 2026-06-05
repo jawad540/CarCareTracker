@@ -1,0 +1,144 @@
+@model CarCareTracker.Models.ViewModels.DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    ViewBag.ActiveNav = "dashboard";
+    var alerts = ViewBag.ReminderAlerts as System.Collections.Generic.List<string>;
+}
+
+@if (alerts != null && alerts.Count > 0)
+{
+    <div class="card" style="border-left:4px solid var(--orange);margin-bottom:18px;">
+        <div class="card-body">
+            <strong>🔔 Reminder Alerts (Observer Pattern):</strong>
+            <ul style="margin:8px 0 0 18px;">
+                @foreach (var a in alerts)
+                {
+                    <li style="font-size:13px;color:var(--slate-600);">@a</li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon blue">🚙</div></div>
+        <div class="stat-label">Total Vehicles</div>
+        <div class="stat-value">@Model.TotalVehicles</div>
+        <div class="stat-sub">Active vehicles</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon green">⛽</div></div>
+        <div class="stat-label">Fuel Expenses</div>
+        <div class="stat-value">$@Model.FuelExpensesThisMonth.ToString("N2")</div>
+        <div class="stat-sub">This month</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon orange">🔧</div></div>
+        <div class="stat-label">Maintenance Cost</div>
+        <div class="stat-value">$@Model.MaintenanceCostThisMonth.ToString("N2")</div>
+        <div class="stat-sub">This month</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon purple">🔔</div></div>
+        <div class="stat-label">Upcoming Reminders</div>
+        <div class="stat-value">@Model.UpcomingRemindersCount</div>
+        <div class="stat-sub">Next 30 days</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-head"><h3>Expense Overview</h3></div>
+        <div class="card-body">
+            <div class="legend">
+                <span><span class="sq" style="background:var(--primary)"></span> Fuel Expenses</span>
+                <span><span class="sq" style="background:var(--orange)"></span> Maintenance Cost</span>
+            </div>
+            <canvas id="expenseChart" height="110"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-head"><h3>Quick Actions</h3></div>
+        <div class="card-body">
+            <div class="quick-actions">
+                <a href="@Url.Action("Create","Vehicles")" class="qa-btn"><span class="qa-ic">🚙</span> Add Vehicle</a>
+                <a href="@Url.Action("Create","Fuel")" class="qa-btn"><span class="qa-ic">⛽</span> Add Fuel</a>
+                <a href="@Url.Action("Create","Maintenance")" class="qa-btn"><span class="qa-ic">🔧</span> Add Maintenance</a>
+                <a href="@Url.Action("Create","Reminders")" class="qa-btn"><span class="qa-ic">🔔</span> Create Reminder</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-head"><h3>Upcoming Services</h3></div>
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrap">
+            <table class="data">
+                <thead><tr><th>Vehicle</th><th>Service</th><th>Due Date</th><th>Days Left</th></tr></thead>
+                <tbody>
+                @if (Model.UpcomingServices.Count == 0)
+                {
+                    <tr><td colspan="4" class="empty">No upcoming services 🎉</td></tr>
+                }
+                else
+                {
+                    foreach (var r in Model.UpcomingServices)
+                    {
+                        <tr>
+                            <td>@r.VehicleLabel</td>
+                            <td>@(r.ServiceName ?? r.Title)</td>
+                            <td>@r.ReminderDate.ToString("MMM dd, yyyy")</td>
+                            <td><span class="badge @(r.DaysLeft <= 7 ? "badge-orange" : "badge-blue")">@r.DaysLeft days</span></td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-head"><h3>Recent Activity</h3></div>
+    <div class="card-body">
+        @if (Model.RecentActivity.Count == 0)
+        {
+            <div class="empty">No recent activity yet</div>
+        }
+        else
+        {
+            foreach (var a in Model.RecentActivity)
+            {
+                var ic = a.Icon == "fuel" ? "⛽" : a.Icon == "tool" ? "🔧" : a.Icon == "bell" ? "🔔" : "🚙";
+                var cls = a.Icon == "fuel" ? "green" : a.Icon == "tool" ? "orange" : a.Icon == "bell" ? "purple" : "blue";
+                <div class="activity-item">
+                    <div class="activity-ic stat-icon @cls">@ic</div>
+                    <div>
+                        <div>@a.Description</div>
+                        <div class="meta">@a.When.ToString("MMM dd, yyyy - hh:mm tt")</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@section scripts {
+<script>
+    var ctx = document.getElementById('expenseChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartMonths)),
+            datasets: [
+                { label: 'Fuel Expenses', data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartFuel)), backgroundColor: '#2563EB', borderRadius: 6 },
+                { label: 'Maintenance Cost', data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ChartMaintenance)), backgroundColor: '#EA580C', borderRadius: 6 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+</script>
+}

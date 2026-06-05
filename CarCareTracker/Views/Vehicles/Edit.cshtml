@@ -1,0 +1,60 @@
+@model CarCareTracker.Models.Vehicle
+@{
+    ViewBag.Title = "Edit Vehicle";
+    ViewBag.ActiveNav = "vehicles";
+    var types = ViewBag.VehicleTypes as System.Collections.Generic.List<CarCareTracker.Models.VehicleType>;
+}
+
+<div class="page-head"><h1>Edit Vehicle</h1><p>Update the details of your vehicle.</p></div>
+
+<div class="card">
+    <div class="card-head"><h3>Vehicle Information</h3></div>
+    <div class="card-body">
+        @using (Html.BeginForm("Edit", "Vehicles", FormMethod.Post))
+        {
+            @*  AntiForgeryToken removed  *@
+            @Html.HiddenFor(m => m.VehicleId)
+            @Html.ValidationSummary(true)
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Plate Number *</label>
+                    @Html.TextBoxFor(m => m.PlateNumber, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label>Brand *</label>
+                    @Html.TextBoxFor(m => m.Brand, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Model *</label>
+                    @Html.TextBoxFor(m => m.Model, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label>Year *</label>
+                    @Html.TextBoxFor(m => m.YearMade, new { @class = "form-control", type = "number" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Vehicle Type *</label>
+                    <select name="TypeId" class="form-control">
+                        @if (types != null) { foreach (var t in types) { <option value="@t.TypeId" @(t.TypeId == Model.TypeId ? "selected" : "")>@t.TypeName</option> } }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Color</label>
+                    @Html.TextBoxFor(m => m.Color, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Current Odometer (KM)</label>
+                @Html.TextBoxFor(m => m.CurrentOdometer, new { @class = "form-control", type = "number" })
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;">
+                <button type="submit" class="btn btn-primary">Update Vehicle</button>
+                <a href="@Url.Action("Index")" class="btn btn-light">Cancel</a>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,83 @@
+@{
+    var active = ViewBag.ActiveNav as string ?? "";
+    var userName = ViewBag.UserName as string ?? "User";
+    var userRole = ViewBag.UserRole as string ?? "User";
+    var initials = "U";
+    if (!string.IsNullOrEmpty(userName))
+    {
+        var parts = userName.Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2 && parts[0].Length > 0 && parts[1].Length > 0)
+        {
+            initials = ("" + parts[0][0] + parts[1][0]).ToUpper();
+        }
+        else if (parts.Length >= 1 && parts[0].Length > 0)
+        {
+            initials = parts[0].Substring(0, 1).ToUpper();
+        }
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Car Care Tracker</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/site.css")" />
+</head>
+<body>
+    <div class="app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="logo">🚗</div>
+                <div class="name">Car Care Tracker</div>
+            </div>
+            <nav class="nav-menu">
+                <a href="@Url.Action("Index","Dashboard")" class="nav-item @(active=="dashboard"?"active":"")"><span class="nav-ic">🏠</span> Dashboard</a>
+                <a href="@Url.Action("Index","Vehicles")" class="nav-item @(active=="vehicles"?"active":"")"><span class="nav-ic">🚙</span> Vehicles</a>
+                <a href="@Url.Action("Index","Fuel")" class="nav-item @(active=="fuel"?"active":"")"><span class="nav-ic">⛽</span> Fuel Records</a>
+                <a href="@Url.Action("Index","Maintenance")" class="nav-item @(active=="maintenance"?"active":"")"><span class="nav-ic">🔧</span> Maintenance</a>
+                <a href="@Url.Action("Index","Reminders")" class="nav-item @(active=="reminders"?"active":"")"><span class="nav-ic">🔔</span> Reminders</a>
+                <a href="@Url.Action("Index","Reports")" class="nav-item @(active=="reports"?"active":"")"><span class="nav-ic">📊</span> Reports</a>
+                @if (userRole == "Admin")
+                {
+                    <a href="@Url.Action("Users","Admin")" class="nav-item @(active=="admin"?"active":"")"><span class="nav-ic">⚙️</span> Admin</a>
+                }
+                <a href="@Url.Action("Logout","Account")" class="nav-item"><span class="nav-ic">🚪</span> Logout</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="main">
+            <header class="topbar">
+                <div class="page-title">@ViewBag.Title</div>
+                <div class="topbar-right">
+                    <div class="bell">🔔<span class="dot"></span></div>
+                    <div class="user-chip">
+                        <div class="avatar">@initials</div>
+                        <div>
+                            <div class="uname">@userName</div>
+                            <div class="urole">@userRole</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="content">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert-success">✅ @TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="validation-summary-errors">@TempData["Error"]</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,16 @@
+@model CarCareTracker.Models.Vehicle
+@{
+    ViewBag.Title = "Vehicle Details";
+    ViewBag.ActiveNav = "vehicles";
+}
+<div class="page-head"><h1>@Model.Brand @Model.Model</h1><p>Plate: @Model.PlateNumber</p></div>
+<div class="card">
+    <div class="card-body">
+        <div class="form-row"><div class="form-group"><label>Plate Number</label><div>@Model.PlateNumber</div></div><div class="form-group"><label>Type</label><div>@Model.TypeName</div></div></div>
+        <div class="form-row"><div class="form-group"><label>Brand</label><div>@Model.Brand</div></div><div class="form-group"><label>Model</label><div>@Model.Model</div></div></div>
+        <div class="form-row"><div class="form-group"><label>Year</label><div>@Model.YearMade</div></div><div class="form-group"><label>Color</label><div>@(Model.Color ?? "-")</div></div></div>
+        <div class="form-group"><label>Current Odometer</label><div>@Model.CurrentOdometer.ToString("N0") KM</div></div>
+        <a href="@Url.Action("Index")" class="btn btn-light">Back</a>
+        <a href="@Url.Action("Edit", new { id = Model.VehicleId })" class="btn btn-primary">Edit</a>
+    </div>
+</div>

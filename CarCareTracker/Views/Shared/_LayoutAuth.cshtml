@@ -1,0 +1,29 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Car Care Tracker</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/site.css")" />
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-hero">
+            <div class="brand-icon">🚗</div>
+            <h1>Car Care Tracker</h1>
+            <p class="tagline">Track. Maintain. Save.</p>
+            <div class="feature"><span class="fi">🚙</span><div><strong>Manage all your vehicles</strong></div></div>
+            <div class="feature"><span class="fi">⛽</span><div><strong>Track expenses and maintenance</strong></div></div>
+            <div class="feature"><span class="fi">🔔</span><div><strong>Get reminders for upcoming services</strong></div></div>
+        </div>
+        <div class="auth-form-side">
+            @RenderBody()
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

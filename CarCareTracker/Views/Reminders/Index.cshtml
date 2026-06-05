@@ -1,0 +1,69 @@
+@model System.Collections.Generic.List<CarCareTracker.Models.Reminder>
+@{
+    ViewBag.Title = "Reminders";
+    ViewBag.ActiveNav = "reminders";
+}
+<div class="page-head page-head-row">
+    <div><h1>Maintenance Reminders</h1><p>View and manage all maintenance reminders.</p></div>
+    <a href="@Url.Action("Create")" class="btn btn-primary">+ Create Reminder</a>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon blue">🔔</div></div>
+        <div class="stat-label">Total Reminders</div>
+        <div class="stat-value">@ViewBag.Total</div>
+        <div class="stat-sub">All reminders</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon orange">📅</div></div>
+        <div class="stat-label">Upcoming This Week</div>
+        <div class="stat-value">@ViewBag.UpcomingWeek</div>
+        <div class="stat-sub">Due in next 7 days</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon red">!</div></div>
+        <div class="stat-label">Overdue</div>
+        <div class="stat-value">@ViewBag.Overdue</div>
+        <div class="stat-sub">Past due reminders</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-top"><div class="stat-icon green">✓</div></div>
+        <div class="stat-label">Completed</div>
+        <div class="stat-value">@ViewBag.Completed</div>
+        <div class="stat-sub">Done</div>
+    </div>
+</div>
+
+<div class="card"><div class="card-body" style="padding:0;">
+    <div class="table-wrap">
+        <table class="data">
+            <thead><tr><th>Vehicle</th><th>Reminder Title</th><th>Reminder Date</th><th>Status</th><th>Days Left</th><th>Actions</th></tr></thead>
+            <tbody>
+            @if (Model.Count == 0) { <tr><td colspan="6" class="empty"><div class="ei">🔔</div>No reminders yet.</td></tr> }
+            else { foreach (var r in Model) {
+                var statusBadge = r.Status == "Completed" ? "badge-green" : (r.Status == "Pending" && r.DaysLeft < 0 ? "badge-red" : "badge-blue");
+                var statusText = r.Status == "Completed" ? "Completed" : (r.DaysLeft < 0 ? "Overdue" : "Upcoming");
+                <tr>
+                    <td>@r.VehicleLabel</td>
+                    <td>@(string.IsNullOrEmpty(r.Title) ? r.ServiceName : r.Title)</td>
+                    <td>@r.ReminderDate.ToString("MMM dd, yyyy")</td>
+                    <td><span class="badge @statusBadge">@statusText</span></td>
+                    <td>@(r.Status == "Completed" ? "-" : r.DaysLeft + " days")</td>
+                    <td>
+                        <div class="row-actions">
+                            @if (r.Status != "Completed")
+                            {
+                                using (Html.BeginForm("Complete", "Reminders", new { id = r.ReminderId }, FormMethod.Post, new { style = "display:inline" }))
+                                { @*  AntiForgeryToken removed  *@ <button type="submit" class="act-view">Complete</button> }
+                            }
+                            @using (Html.BeginForm("Delete", "Reminders", new { id = r.ReminderId }, FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Delete?');" }))
+                            { @*  AntiForgeryToken removed  *@ <button type="submit" class="act-del">Delete</button> }
+                        </div>
+                    </td>
+                </tr>
+            } }
+            </tbody>
+        </table>
+    </div>
+</div></div>
